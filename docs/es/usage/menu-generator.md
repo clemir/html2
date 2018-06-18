@@ -163,5 +163,3 @@ Si tratas `Menu::make` como un string, el menú será renderizado automáticamen
 ## Access handler
 
 Muchas veces es útil mostrar o esconder opciones para usuarios invitados o registrados con ciertos roles, para ello se puede usar el Access Handler incluído en este componente:
-
-[Aprender más sobre el access handler](access-handler.md)

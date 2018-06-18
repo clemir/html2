@@ -1,4 +1,4 @@
-# Field (FieldBuilder)
+# Fields Builder
 
 Este componente permitirá generar el markup completo para los campos del formulario con una línea de código.
 
@@ -223,5 +223,3 @@ Si un input tiene errores, una clase de CSS adicional llamada `error` se agregar
 ## Control de acceso
 
 Es posible que desees ocultar algunos campos para ciertos usuarios, esto se puede hacer usando el Access Handler incluído con este componente:
-
-[Aprender más sobre el access handler](access-handler.md)

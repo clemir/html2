@@ -60,6 +60,7 @@ function genSidebarConfig (title, components) {
         '',
         'getting-started',
         'config',
+        'access-handler',
         'internationalization',
         'themes'
       ]
@@ -73,7 +74,6 @@ function genSidebarConfig (title, components) {
         'html-builder',
         'menu-generator',
         'alert-messages',
-        'access-handler',
       ]
     }
   ]

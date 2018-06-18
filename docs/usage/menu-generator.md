@@ -160,8 +160,6 @@ The menu will be rendered automatically if you treat `Menu::make` as a string, b
 
 `{!! Menu::make('menu.items')->render('custom-template') !!}`
 
-## Access handler
+## Permissions
 
-It is often useful to show or hide options for guest or logged users with certain roles, you can do this using the Access Handler included in this component:
-
-[Learn more about the access handler](access-handler.md)
+It is often useful to show or hide options for guest or logged users with certain roles, you can do this using the --- included in this component:

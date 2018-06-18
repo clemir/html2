@@ -8,7 +8,6 @@ If you are using an older version of Laravel 5.6, take a look at [older document
 :::
 
 ## Installation
-
 The preferred way to install this package is through Composer running in your Laravel app:
 ```bash
 $ composer require styde\html
@@ -16,12 +15,8 @@ $ composer require styde\html
 ## Config file
 Optionally, you may publish the configuration file in `config/html.php`  run:
 ```bash
- $ php artisan vendor:publish --provider='Styde\Html\HtmlServiceProvider'
+ $ php artisan vendor:publish --tag='styde-html-config'
 ```
-::: warning
-When running this command it also will published the default theme in the  `resources/views/themes/` folder.
-:::
-
 ## Middleware
 In order to the alert messages persistent between sessions, after each request is completed, you need to register in the `app/Http/Kernel.php` file the `\Styde\Html\Alert\Middleware::class` middleware **BEFORE** the `EncryptCookies` middleware in the `$middlewareGroups` array:
 ```php
