@@ -2,11 +2,10 @@
 
 ## Requirements
 * PHP: ^7.1
-* Laravel: ^5.6
-::: tip
-If you are using an older version of Laravel 5.6, take a look at [older documentation](../old-version/) of this package
+* Laravel: ^5.7
+::: danger
+If you are using an older version of Laravel 5.7, take a look at [older documentation](../old-version/) of this package
 :::
-
 ## Installation
 The preferred way to install this package is through Composer running in your Laravel app:
 ```bash

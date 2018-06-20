@@ -69,9 +69,9 @@ function genSidebarConfig (title, components) {
       title: components,
       collapsable: false,
       children: [
+        'html-builder',
         'field-builder',
         'form-builder',
-        'html-builder',
         'menu-generator',
         'alert-messages',
       ]

@@ -94,18 +94,7 @@ By default the alert messages will persist using the Laravel's session component
 
 ## Translations
 
-If the `'translate_texts'` options is set to true in the configuration (it's true by default), the alert component will attempt to translate all the messages, using the `$message` value as a lang key, if the language key is not found, it will return the literal string.
- 
-If you don't need to use the translator component, just set translate_texts to false in the configuration:
-
-```php
-//config/html.php
-return [
-    //...
-    'translate_texts' => false
-    //...
-];
-```
+If you need to support multiples languages in your alert messages, you can use [Laravel's localization component.](https://laravel.com/docs/localization)
 
 ## Themes
 
