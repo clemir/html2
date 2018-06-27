@@ -1,149 +1,222 @@
-# Menus Generator
-
-Menus are not static elements,  it is often necessary to mark the active section, translate items, generate dynamic URLs or show/hide options only for certain users.
+# HTML Menu Generator
+[[toc]]
+## Introduction
+Menus are not static elements, it is often necessary to mark the active section and generate dynamic URLs or show/hide options only for certain users, for example.
 
 So instead of adding too much extra HTML and Blade boilerplate code, you can use this component to generate dynamic menus styled for your current CSS framework.
 
-To generate a menu simply add the following code in your layout's template:
+## Create a new menu
+There are two ways to generate a menu: using a menu class or passing the items by `make` method.
+### Using a menu class
+To generate a menu, create a new Menu class running:
+```bash
+$ php artisan make:menu MyMenu
+```
+::: tip NOTE
+This create a new class in the directorio `app\Menus`:
 ```php
-{!! Menu::make('items.here', 'optional css classes') !!}
+<?php
+
+namespace App\Http\Menus;
+
+use Styde\Html\Menu\MenuBuilder;
+use Styde\Html\Menu\MenuComposer;
+
+class MyMenu extends MenuComposer
+{
+    /**
+     * Use this method to add items your menu
+     *
+     * @param  \Styde\Html\Menu\MenuBuilder $items
+     */
+    public function compose(MenuBuilder $items)
+    {
+        // add items
+    }
+}
 ```
-`'items.here'` can be an array or a configuration key (that contains an array), there you will specify the menu items, for example:
-
+:::
+Then add the following code in the `compose` method:
+```php
+$items->url('/', 'Home');
+$items->placeholder('About us');
+$items->url('projects', 'Our projects');
+$items->url('contact-us', 'Contact us');
 ```
-[
-	'home' => ['url' => ''],
-	'about' => ['title' => 'Who we are', 'url' => 'about-us'],
-	'contact-us' => ['full_url' => 'http://contact.us']
-]
+::: tip NOTE
+Each item will be a menu item. It can be of [different types](#adding-menu-items). Also, you can add addional options. See [menu item options](#menu-item-options)
+:::
+
+You can render the menu with the `toHtml` method:
+```php
+(new App\Menus\MyMenu)->toHtml()
 ```
+::: tip
+Also, you may use [Laravel Real-Time Facades](https://laravel.com/docs/facades#real-time-facades)
+`Facades\App\Menus\MyMenu::toHtml()`
+:::
 
-Each item in the array will be a menu item, the array key is required and will be used to generate default options, each menu item value needs to be an array of options (all of them optional).
+### Using the `make` method
+If you don't want to create a menu class you simply can use:
+```php
+Menu::make(function ($items) {
+    $items->url('/', 'Home');
+    $items->placeholder('About us');
+    $items->url('projects', 'Our projects');
+    $items->url('contact-us', 'Contact us');
+})->toHtml();
+```
+::: tip NOTE
+Each item will be a menu item. It can be of [different types](#adding-menu-items). Also, you can add addional options. See [menu item options](#menu-item-options)
+:::
 
-You can specify the following options for each menu item:
-
-## URL
-
+## Adding menu items
 Of course this is the most important part of each menu item, and therefore you have several options to specify an URL:
+### Raw
+`raw(string $url, string $text)`
 
-### full_url
-
-If you pass a 'full_url' key within the item configuration, it will return it as the URL with no additional action, i.e.:
-
-`['full_url' => 'https://styde.net']`
-
-### url
-
-You can pass a relative URL, using the 'url' key. The final URL will be generated using the method `UrlGenerator::to`, i.e.:
-
-`['url' => 'contact-us']`
-
-You can also pass a 'secure' key to indicate whether this particular URL should use https or not. You can also specify a default secure value using the `setDefaultSecure` method (false by default).
-
-`['url' => 'login', 'secure' => 'true']`
-
-### route
-
-You can specify a route's name for a menu item.
-
-`['route' => 'home']`
-
-### route with parameters
-
-You can specify a route with parameters if you pass an array instead of a string as the value of the 'route' key.
-
-The first value will be taken as the route's name, and the others will be the route's parameters.
-
-`['route' => ['profile', 'sileence']]`
-
-### action
-
-You can specify an action for a menu item
-
-### action with parameters
-
-You can specify an action with parameters if you pass an array instead of a string as the value of the 'action' key.
-
-The first value will be the action, and the others will be the action parameters.
-
-### default placeholder
-
-If none of above options is found, then the URL will simply be a placeholder "#".
-
-### Dynamic parameters
-
-Sometimes you will need to use dynamic parameters to build routes and actions, in that case, instead of a value, pass a name precede with :, for example:
-
-`['route' => ['profile', ':username']]`
-
-Then you can assign a value using the setParams or setParam method, like this:
-
-`{!! Menu::make('config.items')->setParam('username', 'sileence') !!}`
-
-Or this:
-
-`{!! Menu::make('config.items')->setParams(['username' => 'sileence']) !!}`
-
-## title
-
-You can specify a title for a menu item using the 'title' key in the options array, i.e.:
-
-`['title' => 'Contact me']`
-
-If no title is set and you are using the translate texts option, it will search for a lang key for the menu item, following this convention: `menu.[key]`, for example:
-
+You can pass a full URL and it will return it as the URL with no additional action. Example:
+```php
+Menu::make(function ($items) {
+    $items->raw('https://styde.net', 'Styde');
+})->toHtml();
 ```
-[
-    'home' => ['url' => '/']
-]
+Render:
+```html
+<ul class="nav">
+    <li class="nav-item">
+        <a href="https://styde.net" class="nav-link">
+            Styde
+        </a>
+    </li>
+</ul>
 ```
+### URL
+`url(string $path, $text, $extra = [], $secure = false)`
 
-As no title is set, it will search for the `menu.home` language key
-
-If neither the title option or the menu key is found, the component will generate a title based on the menu key. i.e.: 'home' will generate 'Home', 'contact-us' will generate 'Contact us', etc.
-
-[Learn more about translate texts option](internationalization.md)
-
-## id
-
-The menu's item key will be used as the menu's item HTML id attribute by default. In case you need to override this behaviour, you can pass an 'id' option.
-
-## submenu
-
-You can specify a sub-menu key and pass another array of menu items, like this:
-
+The final URL will be generated using the method `Illuminate\Contracts\Routing\UrlGenerator::to`. Example:
+```php
+Menu::make(function ($items) {
+    $items->url('about-us', 'About us');
+})->toHtml();
 ```
-[
-    'home' => [],
-    'pages' => [
-        'submenu' => [
-            'about' => [],
-            'company' => ['url' => 'company']
-        ]
-    ]
-]
+Render:
+```html
+<!-- menu item -->
+<a href="http://localhost/about-us" class="nav-link">
+    About us
+</a>
 ```
+### Secure URL
+`secureUrl(string $path, $text, $extra = [])`
 
-The sub-menu items will be rendered with the same options and fallbacks as the menu items.
+You can create a secure URL menu item. It renders it using https.
 
-## active option
-
-All menu items will have the active value set to false as default, unless the URL of a menu item or sub-item has the same or partial base value than the current URL.
-
-For example: 
-
+```php
+Menu::make(function ($items) {
+    $items->secureURL('dashboard', 'Control Panel');
+})->toHtml();
 ```
-[
-    'news' => ['url' => 'news/']
-]
+::: tip
+Also, you can specify a secure URL using the [url method](#url) 
+:::
+
+Render:
+```html
+<!-- menu item -->
+<a href="https://localhost/dashboard" class="nav-link">
+    Control Panel
+</a>
+```
+### Route
+`route(string $route, $text, $parameters = [])`
+
+You can specify a route's name for a menu item. Besides, if you have external parameters, just pass them to the Closure and build the routes there.
+```php
+// having
+Route::get('account/{user_id}', ['as' => 'account']);
+$user_id = 20;
+
+// Menu
+Menu::make(function ($items) use ($user_id) {
+    $items->route('account', 'Account', compact('user_id'));
+})->toHtml();
+```
+Render:
+```html
+<!-- menu item -->
+<a href="http://localhost/account/20" class="nav-link">
+    Account
+</a>
+```
+### Action
+`action(string $action, $text, $parameters = [])`
+You can add a menu item for a controller action.
+
+```php
+// having
+Route::get('dashboard', ['uses' => 'DashboardController@index']);
+
+// Menu
+Menu::make(function ($items) {
+    $items->action('DashboardController@index', 'Dashboard');
+})->toHtml();
+```
+Render:
+```html
+<!-- menu item -->
+<a href="http://localhost/dashboard" class="nav-link">
+    Dashboard
+</a>
 ```
 
-Will be considered the active URL if the current URL is news/ or news/some-slug.
+### Placeholder
+`placeholder($text)`
 
-## CSS classes
+If you want a menu item as a placeholder the URL will simply be a "#".
 
-You can pass CSS classes for a particular menu item using the 'class' option.
+```php
+Menu::make(function ($items) {
+    $items->placeholder('Options');
+})->toHtml();
+```
+Render:
+```html
+<!-- menu item -->
+<a href="#" class="nav-link">
+    Options
+</a>
+```
+## Submenus
+`submenu($text, Closure $setup)`
 
+You can specify a submenu for a menu item using the `submenu` method, like this:
+
+```php
+Menu::make(function ($items) {
+    $items->submenu('About us', function ($items) {
+        $items->placeholder('Team');
+        $items->url('careers', 'Work with us');
+    });
+})->toHtml();
+```
+The submenu items will be rendered with the same options and fallbacks as the menu items.
+
+## Menu Item attributes
+You can specify the following attributes for each menu item:
+
+### CSS classes
+You can pass CSS classes for a particular menu item using the `classes` method.
+```php
+$item->placeholder('Options')->classes(['font-weight-bold', 'text-primary']);
+```
+Render:
+```html
+<!-- menu item -->
+<a href="#" class="nav-link">
+    Options
+</a>
+```
 The active item will also get the 'active' class, and the items with sub-menus will get the 'dropdown' class.
 
 You can customize these classes using:
@@ -154,12 +227,33 @@ You can customize these classes using:
         ->setDropDownClass('dropdown') !!}
 ```
 
-## Render menus and custom templates
+### Active option
 
-The menu will be rendered automatically if you treat `Menu::make` as a string, but you can also call the render method which accepts an optional custom template as an argument, like this:
+All menu items will have the active value set to false as default, unless the URL of a menu item or sub-item has the same or partial base value than the current URL.
 
-`{!! Menu::make('menu.items')->render('custom-template') !!}`
+For example:
+```php
+Menu::make(function ($items) {
+    $items->url('about-us', 'About us');
+})->toHtml();
+```
+Will be considered the active URL if the current URL is news/ or news/some-slug.
 
+## Render with a custom template
+
+The menu will be rendered automatically using the template available in `vendor/styde/html/themes/bootstrap4` or in `resources/views/themes/boostrap4` (only if you [have published the theme](/usage/themes.html#customize)), but you can also call the `template` method which accepts an custom template as an argument, like this:
+```php
+Menu::make(function ($items) {
+    //Items
+})->template('custom-template')->toHtml();
+```
+Also, if you are [using a menu class](#using-a-menu-class) you can add the `template` attribute to the class:
+ ```php
+protected $template = 'custom-template';
+```
+::: warning
+The menu will look for the template in the `resources/views/` folder.
+:::
 ## Permissions
 
-It is often useful to show or hide options for guest or logged users with certain roles, you can do this using the --- included in this component:
+It is often useful to show or hide options for guest or logged users with certain roles, you can do this using the [Access Handler methods](/usage/access-handler.html) included in this component.
